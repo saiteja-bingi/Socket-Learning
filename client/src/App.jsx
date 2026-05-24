@@ -1,76 +1,31 @@
-import { useEffect, useState } from "react";
 import io from "socket.io-client";
-
+import {useState, useEffect } from "react";
 const socket = io("http://localhost:3001");
 
 function App() {
+  const [messages,setMessages]=useState([]);
 
-  const [message, setMessage] = useState("");
-  const [chat, setChat] = useState([]);
-
-  useEffect(() => {
-
-    socket.on("connect", () => {
-      console.log("Connected to Server");
+  useEffect(()=>{
+    
+    socket.emit("hello",{
+      message:"Hello from Client"
     });
 
-    socket.on("receive_message", (data) => {
-
-      setChat((prev) => [...prev, data]);
-
+    socket.on("welcome",(data)=>{
+      setMessages((prev)=>[...prev,data.message])
     });
-
-    return () => {
-
-      socket.off("connect");
-      socket.off("receive_message");
-
-    };
-
-  }, []);
-
-  const sendMessage = () => {
-
-    if(message.trim() === "") return;
-
-    const messageData = {
-      text: message
-    };
-
-    socket.emit("send_message", messageData);
-
-    setMessage("");
-
-  };
+    
+  },[]);
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div>
+      <h1>Socket Learning</h1>
 
-      <h1>Mini Chat</h1>
-
-      <input
-        type="text"
-        placeholder="Type message"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-      />
-
-      <button onClick={sendMessage}>
-        Send
-      </button>
-
-      <div>
-
-        {
-          chat.map((msg, index) => (
-            <p key={index}>
-              {msg.text}
-            </p>
-          ))
-        }
-
-      </div>
-
+      {
+        messages.map((msg,idx)=>(
+          <p key={idx}>{msg}</p>
+        ))
+      }
     </div>
   );
 }
