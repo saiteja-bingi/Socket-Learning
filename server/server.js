@@ -21,9 +21,7 @@ io.on("connection",(socket)=>{
     socket.on("hello",(data)=>{
         console.log(`Hello event recieved : ${data.message}`);
         // socket.emit("welcome"); // only welcome to that specific client
-        io.emit("welcome",{
-            message:"Hello from server!!! Welcome Home!"
-        }); // emit to all clients
+        io.emit("welcome",data); // emit to all clients
     })
 });
 
